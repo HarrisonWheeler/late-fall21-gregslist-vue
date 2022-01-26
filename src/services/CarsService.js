@@ -28,11 +28,37 @@ class CarsService {
     AppState.activeCar = new Car(res.data)
   }
 
-  async getComments(carId) {
-    const res = await api.get(`api/cars/${carId}/comments`)
-    logger.log(res.data)
-    AppState.comments = res.data
+  async getBidsByCar(carId) {
+    const res = await api.get(`api/cars/${carId}/bids`)
+    logger.log('get bids res', res.data)
+    AppState.bids = res.data
   }
+
+  async createBid(carId) {
+    let rate = 0
+    if (AppState.bids[0]) {
+      rate = AppState.bids[0].rate + 100
+    } else {
+      rate = AppState.activeCar.price + 100
+    }
+    const res = await api.post(`api/cars/${carId}/bids`, { rate })
+    logger.log('create bid res', res.data)
+    AppState.bids.unshift(res.data)
+  }
+
+  async increaseBid(carId, bidderId) {
+    let rate = AppState.bids[0].rate + 100
+    const res = await api.put(`api/cars/${carId}/bids`, { rate })
+    logger.log('increase bid res', res.data)
+    AppState.bids = AppState.bids.filter(b => b.accountId !== bidderId)
+    AppState.bids.unshift(res.data)
+  }
+
+  // async getComments(carId) {
+  //   const res = await api.get(`api/cars/${carId}/comments`)
+  //   logger.log(res.data)
+  //   AppState.comments = res.data
+  // }
 
 }
 

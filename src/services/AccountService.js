@@ -11,6 +11,16 @@ class AccountService {
       logger.error('HAVE YOU STARTED YOUR SERVER YET???', err)
     }
   }
+
+  async getBidsByAccount() {
+    try {
+      const res = await api.get('/account/bids')
+      logger.log('account res', res.data)
+      AppState.accountBids = res.data
+    } catch (error) {
+      logger.log(error.message)
+    }
+  }
 }
 
 export const accountService = new AccountService()

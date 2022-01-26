@@ -70,10 +70,37 @@
                 </p>
               </div>
             </div>
+            <div>
+              <p>Bids:</p>
+              <div v-for="(b, i) in bids" :key="b.id">
+                ${{ b.rate }} - <img :src="b.bidder.picture" height="20" />
+                {{ b.bidder.name }}
+                <div class="d-flex">
+                  <button
+                    class="btn btn-info"
+                    v-if="i !== 0 && b.bidder.id == account.id"
+                    @click="increaseBid(b.bidder.id)"
+                  >
+                    + Bid
+                  </button>
+                </div>
+              </div>
+              <div class="d-flex">
+                <button
+                  class="btn btn-success"
+                  v-if="!hasBid"
+                  @click="createBid()"
+                >
+                  Bid
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- EDIT CAR MODAL -->
     <Modal id="edit-modal">
       <template #modal-title>
         {{ car.year }} {{ car.make }} - {{ car.model }}
@@ -87,24 +114,46 @@
 </template>
 
 <script>
-import { computed, onMounted } from '@vue/runtime-core'
-import { carsService } from '../services/CarsService.js'
-import { useRoute } from 'vue-router'
-import { AppState } from '../AppState.js'
+import { computed, onMounted } from "@vue/runtime-core";
+import { carsService } from "../services/CarsService.js";
+import { useRoute } from "vue-router";
+import { AppState } from "../AppState.js";
+import Pop from "../utils/Pop.js";
+import { logger } from "../utils/Logger.js";
 export default {
   setup() {
-    const route = useRoute()
+    const route = useRoute();
     onMounted(() => {
-      carsService.getById(route.params.id)
-      carsService.getComments(route.params.id)
-    })
+      carsService.getById(route.params.id);
+      carsService.getBidsByCar(route.params.id);
+    });
     return {
+      async createBid() {
+        try {
+          await carsService.createBid(route.params.id);
+        } catch (error) {
+          Pop.toast(error.message, "error");
+          logger.log(error);
+        }
+      },
+      async increaseBid(bidderId) {
+        try {
+          await carsService.increaseBid(route.params.id, bidderId);
+        } catch (error) {
+          Pop.toast(error.message, "error");
+          logger.log(error);
+        }
+      },
       account: computed(() => AppState.account),
       car: computed(() => AppState.activeCar),
-      comments: computed(() => AppState.comments)
-    }
-  }
-}
+      comments: computed(() => AppState.comments),
+      bids: computed(() => AppState.bids),
+      hasBid: computed(() =>
+        AppState.bids.find((b) => b.accountId == AppState.account.id)
+      ),
+    };
+  },
+};
 </script>
 
 <style scoped lang="scss">
