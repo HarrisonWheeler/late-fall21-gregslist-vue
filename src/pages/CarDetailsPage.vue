@@ -80,13 +80,13 @@
                 ${{ b.rate }} - <img :src="b.bidder.picture" height="20" />
                 {{ b.bidder.name }}
                 <div class="flex-grow-1 text-end">
-                  <button
-                    class="btn btn-info"
+                  <i
+                    class="mdi mdi-plus btn btn-info"
+                    :title="'bid: ' + (bids[0].rate + 50)"
                     v-if="i !== 0 && b.bidder.id == account.id"
                     @click="increaseBid(b.bidder.id)"
                   >
-                    + Bid
-                  </button>
+                  </i>
                 </div>
               </div>
               <div class="d-flex">
