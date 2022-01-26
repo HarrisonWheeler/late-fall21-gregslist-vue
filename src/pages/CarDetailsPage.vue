@@ -72,10 +72,14 @@
             </div>
             <div>
               <p>Bids:</p>
-              <div v-for="(b, i) in bids" :key="b.id">
+              <div
+                class="d-flex align-items-center"
+                v-for="(b, i) in bids"
+                :key="b.id"
+              >
                 ${{ b.rate }} - <img :src="b.bidder.picture" height="20" />
                 {{ b.bidder.name }}
-                <div class="d-flex">
+                <div class="flex-grow-1 text-end">
                   <button
                     class="btn btn-info"
                     v-if="i !== 0 && b.bidder.id == account.id"
